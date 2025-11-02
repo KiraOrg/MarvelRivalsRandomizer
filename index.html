@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marvel Rivals Team Randomizer</title>
+  <style>
+    :root {
+      --color-dark: #1a1d29;
+      --color-accent: #5a8f7b;
+      --color-text: #e6e8eb;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--color-dark);
+      min-height: 100vh;
+      padding: 20px;
+      color: var(--color-text);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #23262f;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      border: 1px solid #2d3139;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      color: var(--color-text);
+      font-weight: 700;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #a0a4ac;
+      margin-bottom: 30px;
+      font-size: 1.1em;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 1.3em;
+      margin-bottom: 15px;
+      color: var(--color-accent);
+      font-weight: 600;
+    }
+
+    .role-selection {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .role-card {
+      background: #2a2d36;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #363944;
+      transition: all 0.3s ease;
+    }
+
+    .role-card:hover {
+      border-color: var(--color-accent);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(90, 143, 123, 0.15);
+    }
+
+    .role-name {
+      font-size: 1.2em;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--color-text);
+    }
+
+    .role-counter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .counter-btn {
+      background: var(--color-accent);
+      border: none;
+      color: var(--color-dark);
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: bold;
+    }
+
+    .counter-btn:hover {
+      background: #6ba088;
+      transform: scale(1.1);
+    }
+
+    .counter-btn:active {
+      transform: scale(0.95);
+    }
+
+    .counter-btn:disabled {
+      background: #3d4149;
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+
+    .counter-value {
+      font-size: 2em;
+      font-weight: bold;
+      min-width: 40px;
+      text-align: center;
+      color: var(--color-text);
+    }
+
+    .total-indicator {
+      text-align: center;
+      font-size: 1.1em;
+      margin-top: 15px;
+      padding: 10px;
+      background: #2a2d36;
+      border-radius: 8px;
+      border: 1px solid #363944;
+    }
+
+    .total-indicator.error {
+      background: #2a2d36;
+      color: #c77a7a;
+      border-color: #8a5555;
+    }
+
+    .total-indicator.valid {
+      background: #2a2d36;
+      color: var(--color-accent);
+      border-color: var(--color-accent);
+    }
+
+    .player-input-section {
+      margin-top: 30px;
+    }
+
+    .player-inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .player-input-wrapper {
+      position: relative;
+    }
+
+    .player-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #363944;
+      border-radius: 8px;
+      background: #2a2d36;
+      color: var(--color-text);
+      font-size: 1em;
+      transition: all 0.3s ease;
+    }
+
+    .player-input:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      background: #2f3239;
+      box-shadow: 0 0 0 3px rgba(90, 143, 123, 0.1);
+    }
+
+    .player-input::placeholder {
+      color: #6a6d76;
+    }
+
+    .randomize-btn {
+      width: 100%;
+      padding: 18px;
+      font-size: 1.3em;
+      font-weight: 600;
+      background: var(--color-accent);
+      border: none;
+      border-radius: 12px;
+      color: var(--color-dark);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      box-shadow: 0 4px 16px rgba(90, 143, 123, 0.25);
+    }
+
+    .randomize-btn:hover:not(:disabled) {
+      background: #6ba088;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(90, 143, 123, 0.35);
+    }
+
+    .randomize-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .randomize-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .results-container {
+      margin-top: 30px;
+      display: none;
+    }
+
+    .results-container.show {
+      display: block;
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .result-card {
+      background: #2a2d36;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #363944;
+      opacity: 0;
+      animation: cardReveal 0.6s ease-out forwards;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .result-card:hover {
+      border-color: var(--color-accent);
+      box-shadow: 0 4px 16px rgba(90, 143, 123, 0.15);
+    }
+
+    @keyframes cardReveal {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result-card:nth-child(1) { animation-delay: 0.1s; }
+    .result-card:nth-child(2) { animation-delay: 0.2s; }
+    .result-card:nth-child(3) { animation-delay: 0.3s; }
+    .result-card:nth-child(4) { animation-delay: 0.4s; }
+    .result-card:nth-child(5) { animation-delay: 0.5s; }
+    .result-card:nth-child(6) { animation-delay: 0.6s; }
+
+    .player-name {
+      font-size: 1.4em;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: var(--color-text);
+    }
+
+    .role-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .role-badge.vanguard {
+      background: #7d6c68;
+      color: var(--color-text);
+    }
+
+    .role-badge.duelist {
+      background: var(--color-accent);
+      color: var(--color-dark);
+    }
+
+    .role-badge.strategist {
+      background: #6b7f8f;
+      color: var(--color-text);
+    }
+
+    .hero-image {
+      width: 100%;
+      max-width: 220px;
+      height: auto;
+      margin: 15px 0;
+      display: block;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s ease;
+      background: #1a1d29;
+      object-fit: contain;
+    }
+
+    .result-card:hover .hero-image {
+      transform: scale(1.05);
+    }
+
+    .hero-name {
+      font-size: 1.3em;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-top: 5px;
+    }
+
+    .spinning-wheel {
+      display: none;
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    .spinning-wheel.show {
+      display: block;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .wheel-icon {
+      font-size: 4em;
+      color: var(--color-accent);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+
+      .role-selection {
+        grid-template-columns: 1fr;
+      }
+
+      .player-inputs {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚡ Marvel Rivals Team Randomizer ⚡</h1>
+    <p class="subtitle">Create balanced team compositions with randomized heroes</p>
+
+    <!-- Role Selection Section -->
+    <div class="section">
+      <div class="section-title">1. Select Team Composition</div>
+      <div class="role-selection">
+        <div class="role-card">
+          <div class="role-name">🛡️ Vanguard</div>
+          <div class="role-counter">
+            <button class="counter-btn" onclick="changeRoleCount('vanguard', -1)" id="vanguard-decrement">-</button>
+            <span class="counter-value" id="vanguard-count">0</span>
+            <button class="counter-btn" onclick="changeRoleCount('vanguard', 1)" id="vanguard-increment">+</button>
+          </div>
+        </div>
+        <div class="role-card">
+          <div class="role-name">⚔️ Duelist</div>
+          <div class="role-counter">
+            <button class="counter-btn" onclick="changeRoleCount('duelist', -1)" id="duelist-decrement">-</button>
+            <span class="counter-value" id="duelist-count">0</span>
+            <button class="counter-btn" onclick="changeRoleCount('duelist', 1)" id="duelist-increment">+</button>
+          </div>
+        </div>
+        <div class="role-card">
+          <div class="role-name">🎯 Strategist</div>
+          <div class="role-counter">
+            <button class="counter-btn" onclick="changeRoleCount('strategist', -1)" id="strategist-decrement">-</button>
+            <span class="counter-value" id="strategist-count">0</span>
+            <button class="counter-btn" onclick="changeRoleCount('strategist', 1)" id="strategist-increment">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="total-indicator" id="total-indicator">
+        Total: <span id="total-count">0</span> / 6
+      </div>
+    </div>
+
+    <!-- Player Names Section -->
+    <div class="section player-input-section">
+      <div class="section-title">2. Enter Player Names</div>
+      <div class="player-inputs" id="player-inputs">
+        <!-- Player inputs will be generated dynamically -->
+      </div>
+    </div>
+
+    <!-- Randomize Button -->
+    <button class="randomize-btn" id="randomize-btn" onclick="randomizeTeams()">
+      🎲 Randomize Teams 🎲
+    </button>
+
+    <!-- Spinning Animation -->
+    <div class="spinning-wheel" id="spinning-wheel">
+      <div class="wheel-icon">⚡</div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-container" id="results-container">
+      <div class="section-title">✨ Your Team Composition ✨</div>
+      <div class="results-grid" id="results-grid"></div>
+    </div>
+  </div>
+
+  <script>
+    // Hero Image URLs
+    const heroImages = {
+      'Hulk': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/hulk_prestige.png',
+      'Thor': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/thor_prestige.png',
+      'Magneto': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/magneto_prestige.png',
+      'Venom': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/venom_prestige.png',
+      'Groot': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/groot_prestige.png',
+      'Peni Parker': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/peni-parker_prestige.png',
+      'Doctor Strange': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/doctor-strange_prestige.png',
+      'Captain America': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/captain-america_prestige.png',
+      'The Thing': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/the-thing_prestige.png',
+      'Emma Frost': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/emma-frost_prestige.png',
+      'Angela': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/angela_restige.png',
+      'Iron Man': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/iron-man_prestige.png',
+      'Spider-Man': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/spider-man_prestige.png',
+      'Black Panther': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/black-panther_prestige.png',
+      'Wolverine': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/wolverine_prestige.png',
+      'Scarlet Witch': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/scarlet-witch_prestige.png',
+      'Storm': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/storm_prestige.png',
+      'Hawkeye': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/hawkeye_prestige.png',
+      'Hela': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/hela_prestige.png',
+      'Moon Knight': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/moon-knight_prestige.png',
+      'Daredevil': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/daredevil_prestige.png',
+      'Blade': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/blade_prestige.png',
+      'Phoenix': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/phoenix_prestige.png',
+      'Namor': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/namor_prestige.png',
+      'Psylocke': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/psylocke_prestige.png',
+      'Squirrel Girl': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/squirrel-girl_prestige.png',
+      'Star-Lord': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/star-lord_prestige.png',
+      'The Punisher': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/the-punisher_prestige.png',
+      'Winter Soldier': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/winter-soldier_prestige.png',
+      'Magik': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/magik_prestige.png',
+      'Mister Fantastic': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/mister-fantastic_prestige.png',
+      'Human Torch': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/human-torch_prestige.png',
+      'Iron Fist': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/iron-fist_prestige.png',
+      'Black Widow': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/black-widow_prestige.png',
+      'Invisible Woman': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/invisible-woman_prestige.png',
+      'Loki': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/loki_prestige.png',
+      'Luna Snow': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/luna-snow_prestige.png',
+      'Adam Warlock': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/adam-warlock_prestige.png',
+      'Cloak & Dagger': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/cloak-and-dagger_prestige.png',
+      'Jeff the Land Shark': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/jeff-the-land-shark_prestige.png',
+      'Mantis': 'https://rivalskins.com/wp-content/uploads/marvel-assets/assets/hero-prestige-images/mantis_prestige.png'
+    };
+
+    // Marvel Rivals Heroes Database
+    const heroes = {
+      vanguard: [
+        'Hulk', 'Thor', 'Magneto', 'Venom', 'Groot', 'Peni Parker',
+        'Doctor Strange', 'Captain America', 'The Thing', 'Emma Frost', 'Angela'
+      ],
+      duelist: [
+        'Iron Man', 'Spider-Man', 'Black Panther', 'Wolverine', 'Scarlet Witch',
+        'Storm', 'Hawkeye', 'Hela', 'Moon Knight', 'Daredevil', 'Blade',
+        'Phoenix', 'Namor', 'Psylocke', 'Squirrel Girl', 'Star-Lord',
+        'The Punisher', 'Winter Soldier', 'Magik', 'Mister Fantastic',
+        'Human Torch', 'Iron Fist', 'Black Widow'
+      ],
+      strategist: [
+        'Invisible Woman', 'Loki', 'Luna Snow', 'Adam Warlock',
+        'Cloak & Dagger', 'Jeff the Land Shark', 'Mantis'
+      ]
+    };
+
+    // Role counts
+    let roleCounts = {
+      vanguard: 0,
+      duelist: 0,
+      strategist: 0
+    };
+
+    // Update total and UI
+    function updateTotal() {
+      const total = roleCounts.vanguard + roleCounts.duelist + roleCounts.strategist;
+      document.getElementById('total-count').textContent = total;
+      
+      const indicator = document.getElementById('total-indicator');
+      if (total > 6) {
+        indicator.className = 'total-indicator error';
+        indicator.innerHTML = `Total: <span id="total-count">${total}</span> / 6 (Max 6 allowed!)`;
+      } else if (total === 0) {
+        indicator.className = 'total-indicator';
+        indicator.innerHTML = `Total: <span id="total-count">${total}</span> / 6`;
+      } else {
+        indicator.className = 'total-indicator valid';
+        indicator.innerHTML = `Total: <span id="total-count">${total}</span> / 6`;
+      }
+
+      updatePlayerInputs(total);
+      updateRandomizeButton();
+    }
+
+    // Change role count
+    function changeRoleCount(role, change) {
+      const newValue = roleCounts[role] + change;
+      if (newValue >= 0 && (roleCounts.vanguard + roleCounts.duelist + roleCounts.strategist + change) <= 6) {
+        roleCounts[role] = newValue;
+        document.getElementById(`${role}-count`).textContent = newValue;
+        
+        // Update button states
+        document.getElementById(`${role}-decrement`).disabled = newValue === 0;
+        document.getElementById(`${role}-increment`).disabled = 
+          (roleCounts.vanguard + roleCounts.duelist + roleCounts.strategist) >= 6;
+        
+        updateTotal();
+      }
+    }
+
+    // Update player input fields
+    function updatePlayerInputs(count) {
+      const container = document.getElementById('player-inputs');
+      container.innerHTML = '';
+      
+      for (let i = 0; i < 6; i++) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'player-input-wrapper';
+        
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'player-input';
+        input.id = `player-${i}`;
+        input.placeholder = i < count ? `Player ${i + 1}` : '';
+        input.style.display = i < count ? 'block' : 'none';
+        
+        wrapper.appendChild(input);
+        container.appendChild(wrapper);
+      }
+    }
+
+    // Update randomize button state
+    function updateRandomizeButton() {
+      const total = roleCounts.vanguard + roleCounts.duelist + roleCounts.strategist;
+      const btn = document.getElementById('randomize-btn');
+      
+      if (total === 0 || total > 6) {
+        btn.disabled = true;
+      } else {
+        // Check if enough player names are filled
+        let filledCount = 0;
+        for (let i = 0; i < total; i++) {
+          const input = document.getElementById(`player-${i}`);
+          if (input && input.value.trim()) {
+            filledCount++;
+          }
+        }
+        btn.disabled = filledCount !== total;
+      }
+    }
+
+    // Add event listeners to player inputs
+    document.addEventListener('input', function(e) {
+      if (e.target.classList.contains('player-input')) {
+        updateRandomizeButton();
+      }
+    });
+
+    // Shuffle array (Fisher-Yates)
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    // Randomize teams
+    function randomizeTeams() {
+      const total = roleCounts.vanguard + roleCounts.duelist + roleCounts.strategist;
+      
+      // Validate
+      if (total === 0 || total > 6) {
+        alert('Please select a valid team composition (1-6 total roles).');
+        return;
+      }
+
+      // Get player names
+      const players = [];
+      for (let i = 0; i < total; i++) {
+        const input = document.getElementById(`player-${i}`);
+        const name = input.value.trim() || `Player ${i + 1}`;
+        players.push(name);
+      }
+
+      // Hide results, show spinning wheel
+      document.getElementById('results-container').classList.remove('show');
+      document.getElementById('spinning-wheel').classList.add('show');
+      document.getElementById('randomize-btn').disabled = true;
+
+      // Build assignments
+      const assignments = [];
+      const shuffledHeroes = {
+        vanguard: shuffleArray(heroes.vanguard),
+        duelist: shuffleArray(heroes.duelist),
+        strategist: shuffleArray(heroes.strategist)
+      };
+
+      let playerIndex = 0;
+
+      // Assign vanguards
+      for (let i = 0; i < roleCounts.vanguard; i++) {
+        const hero = shuffledHeroes.vanguard[i % shuffledHeroes.vanguard.length];
+        assignments.push({
+          player: players[playerIndex++],
+          role: 'Vanguard',
+          hero: hero,
+          image: heroImages[hero] || ''
+        });
+      }
+
+      // Assign duelists
+      for (let i = 0; i < roleCounts.duelist; i++) {
+        const hero = shuffledHeroes.duelist[i % shuffledHeroes.duelist.length];
+        assignments.push({
+          player: players[playerIndex++],
+          role: 'Duelist',
+          hero: hero,
+          image: heroImages[hero] || ''
+        });
+      }
+
+      // Assign strategists
+      for (let i = 0; i < roleCounts.strategist; i++) {
+        const hero = shuffledHeroes.strategist[i % shuffledHeroes.strategist.length];
+        assignments.push({
+          player: players[playerIndex++],
+          role: 'Strategist',
+          hero: hero,
+          image: heroImages[hero] || ''
+        });
+      }
+
+      // Shuffle assignments for randomness
+      const shuffledAssignments = shuffleArray(assignments);
+
+      // Animate results after a delay
+      setTimeout(() => {
+        document.getElementById('spinning-wheel').classList.remove('show');
+        displayResults(shuffledAssignments);
+        document.getElementById('randomize-btn').disabled = false;
+      }, 1500);
+    }
+
+    // Display results with animation
+    function displayResults(assignments) {
+      const container = document.getElementById('results-grid');
+      container.innerHTML = '';
+
+      assignments.forEach((assignment, index) => {
+        const card = document.createElement('div');
+        card.className = 'result-card';
+        card.style.animationDelay = `${index * 0.1}s`;
+
+        const roleClass = assignment.role.toLowerCase();
+        const imageHtml = assignment.image 
+          ? `<img src="${assignment.image}" alt="${assignment.hero}" class="hero-image" onerror="this.style.display='none'">`
+          : '';
+        
+        card.innerHTML = `
+          <div class="player-name">${assignment.player}</div>
+          <div class="role-badge ${roleClass}">${assignment.role}</div>
+          ${imageHtml}
+          <div class="hero-name">${assignment.hero}</div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      document.getElementById('results-container').classList.add('show');
+    }
+
+    // Initialize
+    updateTotal();
+  </script>
+</body>
+</html>
